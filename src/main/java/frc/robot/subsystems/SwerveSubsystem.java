@@ -13,7 +13,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,7 +32,7 @@ public class SwerveSubsystem extends SubsystemBase {
      public SwerveModule backRight = new SwerveModule(
       Constants.ServeConstants.backRightTurn,
       Constants.ServeConstants.backRightDrive,
-      Constants.ServeConstants.backRightEncoder, true, false
+      Constants.ServeConstants.backRightEncoder, false, false
      );
 
      public SwerveModule frontLeft = new SwerveModule(
@@ -49,20 +50,20 @@ public class SwerveSubsystem extends SubsystemBase {
      RobotConfig config;
      ChassisSpeeds chassisSpeeds;
      public SwerveDriveOdometry swerveDriveOdometry;
-     public Field2d glassField2d = new Field2d();
+    
      public Pigeon2 gyro;
 
-  /** Creates a new SwerveSubsystem. */
+
   public SwerveSubsystem(int gyroPort) {
     this.gyro = new Pigeon2(gyroPort);
     swerveDriveOdometry = new SwerveDriveOdometry(Constants.ServeConstants.driveKinematics, getRotation2d(), getModulePositions());
 
-    speed_chooser.addOption("Fast", 1.0);
-    speed_chooser.setDefaultOption("Normal", 1.5);
-    speed_chooser.addOption("Slow", 4.0);
-    speed_chooser.addOption("Slowest", 6.0);
-    speed_chooser.addOption("Precision", 10.0);
-    SmartDashboard.putData("Speed", speed_chooser);
+    speed_chooser.addOption("Fast",Constants.ChasisConstants.fast);
+    speed_chooser.addOption("Slow", Constants.ChasisConstants.slow);
+    speed_chooser.addOption("Slowest", Constants.ChasisConstants.slowest);
+    speed_chooser.addOption("Precision", Constants.ChasisConstants.precision);
+    speed_chooser.setDefaultOption("Normal", Constants.ChasisConstants.normal);
+    SmartDashboard.putData("Swerve Speed", speed_chooser);
   }
 
   public void driveRobotRelative(ChassisSpeeds robotRelative) 
@@ -90,7 +91,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] desiredStates) 
   {
-    //Not sure tbh, just FRC stuff -- read WPILIB Documentation
     frontLeft.setDesiredState(desiredStates[0]);
     frontRight.setDesiredState(desiredStates[1]); 
     backLeft.setDesiredState(desiredStates[2]);
@@ -132,8 +132,8 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     swerveDriveOdometry.update(getRotation2d(), getModulePositions());
-    glassField2d.setRobotPose(RobotContainer.swerveSubsystem.swerveDriveOdometry.getPoseMeters());
-    SmartDashboard.putData("Field", glassField2d);
+    Constants.ShuffleboardConstants.glassField2d.setRobotPose(RobotContainer.swerveSubsystem.swerveDriveOdometry.getPoseMeters());
+    SmartDashboard.putData("Field", Constants.ShuffleboardConstants.glassField2d);
 
     Pose2d pose = swerveDriveOdometry.getPoseMeters();
     double distanceTraveled = Math.sqrt(Math.pow(pose.getX() - 0, 2) + Math.pow(pose.getY() - 0, 2));
@@ -145,6 +145,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("BL", Math.abs(backLeft.getTurningPosition()));
     SmartDashboard.putNumber("BR", Math.abs(backRight.getTurningPosition()));
     SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
+
     Constants.ChasisConstants.speedLimiter = (Double) speed_chooser.getSelected();
   }
 }

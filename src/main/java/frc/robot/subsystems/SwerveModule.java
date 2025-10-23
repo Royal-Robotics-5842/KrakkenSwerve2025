@@ -34,7 +34,6 @@ public class SwerveModule {
       
     TalonFXConfigurator turnConfigurator = turnMotorFx.getConfigurator();
     TalonFXConfigurator driveConfigurator = turnMotorFx.getConfigurator();
-
   
     if(turnReversed) {
       MotorOutputConfigs turnOutput = new MotorOutputConfigs();

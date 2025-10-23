@@ -54,7 +54,7 @@ public class RobotContainer {
       swerveSubsystem,
       () -> -driverJoystick.getRawAxis(OIConstants.kDriverYAxis), // Forward/Back DO NOT TOUCH
       () -> -driverJoystick.getRawAxis(OIConstants.kDriverXAxis), // Left/Right
-      () -> -driverJoystick.getRawAxis(OIConstants.kDriverRotAxis),
+      () -> driverJoystick.getRawAxis(OIConstants.kDriverRotAxis),
       () -> true));
   }
 

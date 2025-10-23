@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -20,9 +21,19 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
+  public static class ShuffleboardConstants {
+    public static Field2d glassField2d = new Field2d();
+  }
+
   public static class ChasisConstants {
     public static final int pidgeonGyro = 0;
     public static Double speedLimiter = 1.0;
+
+    public static Double normal = 1.0;
+    public static Double fast = 1.5;
+    public static Double slow = 4.0;
+    public static Double slowest = 6.0;
+    public static Double precision = 10.0;
   }
 
   public static class ServeConstants {
@@ -52,7 +63,7 @@ public final class Constants {
     public static final int backRightDrive = 13;
 
     //Encoders
-    public static final int backRightEncoder = 20;
+    public static final int backRightEncoder = 21;
     public static final int backLeftEncoder = 5;
     public static final int frontRightEncoder = 6;
     public static final int frontLeftEncoder = 4;
