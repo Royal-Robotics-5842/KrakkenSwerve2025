@@ -10,9 +10,10 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.Constants.OIConstants;
 import frc.robot.RobotContainer;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.OIConstants;
+import frc.robot.constants.DrivetrainConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class SwerveJoystick extends Command {
@@ -29,9 +30,9 @@ public class SwerveJoystick extends Command {
               this.turningSpdFunction = turningSpdFunction;
               this.fieldOrientedFunction = fieldOrientedFunction;
 
-              this.xLimiter = new SlewRateLimiter(Constants.ServeConstants.maxAccelerationUnitsPerSecond);
-              this.yLimiter = new SlewRateLimiter(Constants.ServeConstants.maxAccelerationUnitsPerSecond);
-              this.turningLimiter = new SlewRateLimiter(Constants.ServeConstants.maxAngularAccelerationUnitsPerSecond);
+              this.xLimiter = new SlewRateLimiter(DrivetrainConstants.ServeConstants.maxAccelerationUnitsPerSecond);
+              this.yLimiter = new SlewRateLimiter(DrivetrainConstants.ServeConstants.maxAccelerationUnitsPerSecond);
+              this.turningLimiter = new SlewRateLimiter(DrivetrainConstants.ServeConstants.maxAngularAccelerationUnitsPerSecond);
 
     // Use addRequirements() here to declare subsystem dependencies.
 
@@ -47,18 +48,18 @@ public class SwerveJoystick extends Command {
   public void execute() 
   {
     // 1. Get real-time joystick inputs
-    double xSpeed = xSpdFunction.get() / Constants.ChasisConstants.speedLimiter;
-    double ySpeed = ySpdFunction.get() / Constants.ChasisConstants.speedLimiter;
-    double turningSpeed = turningSpdFunction.get() / Constants.ChasisConstants.speedLimiter;
+    double xSpeed = xSpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
+    double ySpeed = ySpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
+    double turningSpeed = turningSpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
 
     xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
     
-    xSpeed = xLimiter.calculate(xSpeed) * Constants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
-    ySpeed = yLimiter.calculate(ySpeed) * Constants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
+    xSpeed = xLimiter.calculate(xSpeed) * DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
+    ySpeed = yLimiter.calculate(ySpeed) * DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
     turningSpeed = turningLimiter.calculate(turningSpeed)
-            * Constants.ServeConstants.kPhysicalMaxAngularSpeedRadiansPerSecond;
+            * DrivetrainConstants.ServeConstants.kPhysicalMaxAngularSpeedRadiansPerSecond;
 
     ChassisSpeeds chassisSpeeds;
         if (fieldOrientedFunction.get())
@@ -70,7 +71,7 @@ public class SwerveJoystick extends Command {
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
         }
         
-    SwerveModuleState[] moduleStates = Constants.ServeConstants.driveKinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveModuleState[] moduleStates = DrivetrainConstants.ServeConstants.driveKinematics.toSwerveModuleStates(chassisSpeeds);
     swerveSubsystem.setModuleStates(moduleStates);
   }
   

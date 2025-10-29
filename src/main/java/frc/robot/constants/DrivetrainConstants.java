@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -16,15 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-  }
-
-  public static class ShuffleboardConstants {
-    public static Field2d glassField2d = new Field2d();
-  }
-
+public final class DrivetrainConstants {
   public static class ChasisConstants {
     public static final int pidgeonGyro = 0;
     public static Double speedLimiter = 1.0;
@@ -74,19 +66,6 @@ public final class Constants {
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double maxAccelerationUnitsPerSecond = 3.5;
     public static final double maxAngularAccelerationUnitsPerSecond = 3.5;
-  }
-
-  public static final class OIConstants
-  {
-    public static final int kDriverYAxis = 1;
-    public static final int kDriverXAxis = 0;
-    public static final int kDriverRotAxis = 4;
-    public static final int kDriverFieldOrientedButtonIdx = 5;
-
-
-    public static final int kDriverControllerPort = 0;
-    public static final int kOperatorControllerPort = 0;
-    public static final double kDeadband = 0.06;
   }
 }
 

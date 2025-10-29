@@ -4,9 +4,11 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Reset;
 import frc.robot.commands.SwerveJoystick;
+import frc.robot.constants.Constants;
+import frc.robot.constants.DrivetrainConstants;
+import frc.robot.constants.Constants.OIConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -24,7 +26,7 @@ public class RobotContainer {
   public final static Joystick driverJoystick = new Joystick(Constants.OperatorConstants.kDriverControllerPort);
   public final static CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
 
-  public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem(Constants.ChasisConstants.pidgeonGyro);
+  public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem(DrivetrainConstants.ChasisConstants.pidgeonGyro);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

@@ -18,33 +18,34 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.constants.Constants;
+import frc.robot.constants.DrivetrainConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
   SendableChooser<Double> speed_chooser = new SendableChooser<>();
     public SwerveModule backLeft = new SwerveModule(
-      Constants.ServeConstants.backLeftTurn,
-      Constants.ServeConstants.backLeftDrive,
-      Constants.ServeConstants.backLeftEncoder, false, false
+      DrivetrainConstants.ServeConstants.backLeftTurn,
+      DrivetrainConstants.ServeConstants.backLeftDrive,
+      DrivetrainConstants.ServeConstants.backLeftEncoder, false, false
      );
 
      public SwerveModule backRight = new SwerveModule(
-      Constants.ServeConstants.backRightTurn,
-      Constants.ServeConstants.backRightDrive,
-      Constants.ServeConstants.backRightEncoder, false, false
+      DrivetrainConstants.ServeConstants.backRightTurn,
+      DrivetrainConstants.ServeConstants.backRightDrive,
+      DrivetrainConstants.ServeConstants.backRightEncoder, false, false
      );
 
      public SwerveModule frontLeft = new SwerveModule(
-      Constants.ServeConstants.frontLeftTurn,
-      Constants.ServeConstants.frontLeftDrive,
-      Constants.ServeConstants.frontLeftEncoder, false, false
+      DrivetrainConstants.ServeConstants.frontLeftTurn,
+      DrivetrainConstants.ServeConstants.frontLeftDrive,
+      DrivetrainConstants.ServeConstants.frontLeftEncoder, false, false
      );
 
      public SwerveModule frontRight = new SwerveModule(
-      Constants.ServeConstants.frontRightTurn,
-      Constants.ServeConstants.frontRightDrive,
-      Constants.ServeConstants.frontRightEncoder, false, false
+      DrivetrainConstants.ServeConstants.frontRightTurn,
+      DrivetrainConstants.ServeConstants.frontRightDrive,
+      DrivetrainConstants.ServeConstants.frontRightEncoder, false, false
      );
 
      RobotConfig config;
@@ -56,19 +57,19 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveSubsystem(int gyroPort) {
     this.gyro = new Pigeon2(gyroPort);
-    swerveDriveOdometry = new SwerveDriveOdometry(Constants.ServeConstants.driveKinematics, getRotation2d(), getModulePositions());
+    swerveDriveOdometry = new SwerveDriveOdometry(DrivetrainConstants.ServeConstants.driveKinematics, getRotation2d(), getModulePositions());
 
-    speed_chooser.addOption("Fast",Constants.ChasisConstants.fast);
-    speed_chooser.addOption("Slow", Constants.ChasisConstants.slow);
-    speed_chooser.addOption("Slowest", Constants.ChasisConstants.slowest);
-    speed_chooser.addOption("Precision", Constants.ChasisConstants.precision);
-    speed_chooser.setDefaultOption("Normal", Constants.ChasisConstants.normal);
+    speed_chooser.addOption("Fast",DrivetrainConstants.ChasisConstants.fast);
+    speed_chooser.addOption("Slow", DrivetrainConstants.ChasisConstants.slow);
+    speed_chooser.addOption("Slowest", DrivetrainConstants.ChasisConstants.slowest);
+    speed_chooser.addOption("Precision", DrivetrainConstants.ChasisConstants.precision);
+    speed_chooser.setDefaultOption("Normal", DrivetrainConstants.ChasisConstants.normal);
     SmartDashboard.putData("Swerve Speed", speed_chooser);
   }
 
   public void driveRobotRelative(ChassisSpeeds robotRelative) 
   {
-    SwerveModuleState[] targetStates = Constants.ServeConstants.driveKinematics.toSwerveModuleStates(robotRelative);
+    SwerveModuleState[] targetStates = DrivetrainConstants.ServeConstants.driveKinematics.toSwerveModuleStates(robotRelative);
     setModuleStates(targetStates);
   }
 
@@ -146,6 +147,6 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("BR", Math.abs(backRight.getTurningPosition()));
     SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
 
-    Constants.ChasisConstants.speedLimiter = (Double) speed_chooser.getSelected();
+    DrivetrainConstants.ChasisConstants.speedLimiter = (Double) speed_chooser.getSelected();
   }
 }
