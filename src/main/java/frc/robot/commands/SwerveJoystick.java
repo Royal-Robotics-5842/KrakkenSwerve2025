@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.constants.Constants.OIConstants;
@@ -51,10 +52,15 @@ public class SwerveJoystick extends Command {
     double ySpeed = ySpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
     double turningSpeed = turningSpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
 
+    SmartDashboard.putNumber("XJoy", xSpdFunction.get());
+    SmartDashboard.putNumber("YJoy", ySpdFunction.get());
+
+    
     xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
-    
+
+
     xSpeed = xLimiter.calculate(xSpeed) * DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
     ySpeed = yLimiter.calculate(ySpeed) * DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
     turningSpeed = turningLimiter.calculate(turningSpeed)

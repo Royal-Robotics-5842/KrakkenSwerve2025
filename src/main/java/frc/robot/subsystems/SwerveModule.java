@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.constants.Constants;
+import frc.robot.constants.DrivetrainConstants;
 
 public class SwerveModule {
   private final TalonFX turnMotorFx;
@@ -29,7 +30,7 @@ public class SwerveModule {
     this.encoder = new CANcoder(encoder);
     
     CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
-    currentLimits.StatorCurrentLimit = Constants.ServeConstants.defaultStatorLimit;
+    currentLimits.StatorCurrentLimit = DrivetrainConstants.ServeConstants.defaultStatorLimit;
     currentLimits.StatorCurrentLimitEnable = true;
       
     TalonFXConfigurator turnConfigurator = turnMotorFx.getConfigurator();
@@ -99,7 +100,7 @@ public class SwerveModule {
             stop();
             return;
         }
-        driveMotorFX.set(state.speedMetersPerSecond/Constants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond);
+        driveMotorFX.set(state.speedMetersPerSecond/DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond);
         turnMotorFx.set(turningPidController.calculate(getTurningPosition(), state.angle.getDegrees()));
     }
 

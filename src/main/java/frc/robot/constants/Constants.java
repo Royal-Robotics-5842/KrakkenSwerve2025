@@ -19,8 +19,14 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
   }
 
-  public static class ShuffleboardConstants {
-    public static Field2d glassField2d = new Field2d();
+  public static class DataLoggingConstants {
+    public static Field2d odometryRelativeField = new Field2d();
+    public static Field2d visionRelativeField = new Field2d();
+  }
+
+  public static class PhotonConstants {
+    public static String frontCameras1 = "frontone";
+    public static double maxAllowedAmbiguity = 0.20;
   }
 
   public static final class OIConstants

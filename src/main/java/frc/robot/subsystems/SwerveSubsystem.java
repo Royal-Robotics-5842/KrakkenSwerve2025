@@ -131,8 +131,10 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     swerveDriveOdometry.update(getRotation2d(), getModulePositions());
-    Constants.ShuffleboardConstants.glassField2d.setRobotPose(RobotContainer.swerveSubsystem.swerveDriveOdometry.getPoseMeters());
-    SmartDashboard.putData("Field", Constants.ShuffleboardConstants.glassField2d);
+    Constants.DataLoggingConstants.odometryRelativeField.setRobotPose(RobotContainer.swerveSubsystem.swerveDriveOdometry.getPoseMeters());
+    
+    SmartDashboard.putData("Odometry Field", Constants.DataLoggingConstants.odometryRelativeField);
+    SmartDashboard.putData("Vision Field", Constants.DataLoggingConstants.visionRelativeField);
 
     Pose2d pose = swerveDriveOdometry.getPoseMeters();
     double distanceTraveled = Math.sqrt(Math.pow(pose.getX() - 0, 2) + Math.pow(pose.getY() - 0, 2));

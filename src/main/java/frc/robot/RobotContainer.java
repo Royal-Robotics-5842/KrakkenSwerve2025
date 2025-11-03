@@ -9,6 +9,7 @@ import frc.robot.commands.SwerveJoystick;
 import frc.robot.constants.Constants;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.Constants.OIConstants;
+import frc.robot.subsystems.PhotonSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,7 +28,7 @@ public class RobotContainer {
   public final static CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
 
   public final static SwerveSubsystem swerveSubsystem = new SwerveSubsystem(DrivetrainConstants.ChasisConstants.pidgeonGyro);
-
+  public final static PhotonSubsystem photonSubsystem = new PhotonSubsystem();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
@@ -54,9 +55,9 @@ public class RobotContainer {
     // cancelling on release.
   swerveSubsystem.setDefaultCommand(new SwerveJoystick(
       swerveSubsystem,
-      () -> -driverJoystick.getRawAxis(OIConstants.kDriverYAxis), // Forward/Back DO NOT TOUCH
-      () -> -driverJoystick.getRawAxis(OIConstants.kDriverXAxis), // Left/Right
-      () -> driverJoystick.getRawAxis(OIConstants.kDriverRotAxis),
+      () -> driverJoystick.getRawAxis(OIConstants.kDriverYAxis), // Forward/Back DO NOT TOUCH
+      () -> driverJoystick.getRawAxis(OIConstants.kDriverXAxis), // Left/Right
+      () -> -driverJoystick.getRawAxis(OIConstants.kDriverRotAxis),
       () -> true));
   }
 
