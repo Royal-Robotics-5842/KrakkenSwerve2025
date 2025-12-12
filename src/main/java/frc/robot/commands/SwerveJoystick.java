@@ -30,9 +30,12 @@ public class SwerveJoystick extends Command {
               this.turningSpdFunction = turningSpdFunction;
               this.fieldOrientedFunction = fieldOrientedFunction;
 
-              this.xLimiter = new SlewRateLimiter(DrivetrainConstants.ServeConstants.maxAccelerationUnitsPerSecond);
-              this.yLimiter = new SlewRateLimiter(DrivetrainConstants.ServeConstants.maxAccelerationUnitsPerSecond);
-              this.turningLimiter = new SlewRateLimiter(DrivetrainConstants.ServeConstants.maxAngularAccelerationUnitsPerSecond);
+              this.xLimiter = new SlewRateLimiter(DrivetrainConstants.SwerveConstants
+              .maxAccelerationUnitsPerSecond);
+              this.yLimiter = new SlewRateLimiter(DrivetrainConstants.SwerveConstants
+              .maxAccelerationUnitsPerSecond);
+              this.turningLimiter = new SlewRateLimiter(DrivetrainConstants.SwerveConstants
+              .maxAngularAccelerationUnitsPerSecond);
 
     // Use addRequirements() here to declare subsystem dependencies.
 
@@ -48,9 +51,9 @@ public class SwerveJoystick extends Command {
   public void execute() 
   {
     // 1. Get real-time joystick inputs
-    double xSpeed = xSpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
-    double ySpeed = ySpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
-    double turningSpeed = turningSpdFunction.get() / DrivetrainConstants.ChasisConstants.speedLimiter;
+    double xSpeed = xSpdFunction.get();
+    double ySpeed = ySpdFunction.get();
+    double turningSpeed = turningSpdFunction.get();
 
     SmartDashboard.putNumber("XJoy", xSpdFunction.get());
     SmartDashboard.putNumber("YJoy", ySpdFunction.get());
@@ -61,10 +64,13 @@ public class SwerveJoystick extends Command {
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
 
-    xSpeed = xLimiter.calculate(xSpeed) * DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
-    ySpeed = yLimiter.calculate(ySpeed) * DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond;
+    xSpeed = xLimiter.calculate(xSpeed) * (DrivetrainConstants.SwerveConstants
+    .kPhysicalMaxSpeedMetersPerSecond / DrivetrainConstants.ChasisConstants.speedLimiter);
+    ySpeed = yLimiter.calculate(ySpeed) * (DrivetrainConstants.SwerveConstants
+    .kPhysicalMaxSpeedMetersPerSecond / DrivetrainConstants.ChasisConstants.speedLimiter);
     turningSpeed = turningLimiter.calculate(turningSpeed)
-            * DrivetrainConstants.ServeConstants.kPhysicalMaxAngularSpeedRadiansPerSecond;
+            * (DrivetrainConstants.SwerveConstants
+            .kPhysicalMaxAngularSpeedRadiansPerSecond / DrivetrainConstants.ChasisConstants.speedLimiter);
 
     ChassisSpeeds chassisSpeeds;
         if (fieldOrientedFunction.get())
@@ -76,7 +82,8 @@ public class SwerveJoystick extends Command {
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
         }
         
-    SwerveModuleState[] moduleStates = DrivetrainConstants.ServeConstants.driveKinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveModuleState[] moduleStates = DrivetrainConstants.SwerveConstants
+    .driveKinematics.toSwerveModuleStates(chassisSpeeds);
     swerveSubsystem.setModuleStates(moduleStates);
   }
   

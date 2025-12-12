@@ -5,14 +5,17 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,124 +24,163 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.DrivetrainConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
+  public SwerveModule backLeft = new SwerveModule(
+      DrivetrainConstants.SwerveConstants
+      .backLeftTurn,
+      DrivetrainConstants.SwerveConstants
+      .backLeftDrive,
+      DrivetrainConstants.SwerveConstants
+      .backLeftEncoder);
+
+  public SwerveModule backRight = new SwerveModule(
+      DrivetrainConstants.SwerveConstants
+      .backRightTurn,
+      DrivetrainConstants.SwerveConstants
+      .backRightDrive,
+      DrivetrainConstants.SwerveConstants
+      .backRightEncoder);
+
+  public SwerveModule frontLeft = new SwerveModule(
+      DrivetrainConstants.SwerveConstants
+      .frontLeftTurn,
+      DrivetrainConstants.SwerveConstants
+      .frontLeftDrive,
+      DrivetrainConstants.SwerveConstants
+      .frontLeftEncoder);
+
+  public SwerveModule frontRight = new SwerveModule(
+      DrivetrainConstants.SwerveConstants
+      .frontRightTurn,
+      DrivetrainConstants.SwerveConstants
+      .frontRightDrive,
+      DrivetrainConstants.SwerveConstants
+      .frontRightEncoder);
+
   SendableChooser<Double> speed_chooser = new SendableChooser<>();
-    public SwerveModule backLeft = new SwerveModule(
-      DrivetrainConstants.ServeConstants.backLeftTurn,
-      DrivetrainConstants.ServeConstants.backLeftDrive,
-      DrivetrainConstants.ServeConstants.backLeftEncoder, false, false
-     );
+  SendableChooser<Boolean> field_oriented_Chooser = new SendableChooser<>();
+  RobotConfig config;
 
-     public SwerveModule backRight = new SwerveModule(
-      DrivetrainConstants.ServeConstants.backRightTurn,
-      DrivetrainConstants.ServeConstants.backRightDrive,
-      DrivetrainConstants.ServeConstants.backRightEncoder, false, false
-     );
-
-     public SwerveModule frontLeft = new SwerveModule(
-      DrivetrainConstants.ServeConstants.frontLeftTurn,
-      DrivetrainConstants.ServeConstants.frontLeftDrive,
-      DrivetrainConstants.ServeConstants.frontLeftEncoder, false, false
-     );
-
-     public SwerveModule frontRight = new SwerveModule(
-      DrivetrainConstants.ServeConstants.frontRightTurn,
-      DrivetrainConstants.ServeConstants.frontRightDrive,
-      DrivetrainConstants.ServeConstants.frontRightEncoder, false, false
-     );
-
-     RobotConfig config;
-     ChassisSpeeds chassisSpeeds;
-     public SwerveDriveOdometry swerveDriveOdometry;
-    
-     public Pigeon2 gyro;
-
+  public ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);;
+  public SwerveDriveOdometry swerveDriveOdometry;
+  public Pigeon2 gyro;
 
   public SwerveSubsystem(int gyroPort) {
     this.gyro = new Pigeon2(gyroPort);
-    swerveDriveOdometry = new SwerveDriveOdometry(DrivetrainConstants.ServeConstants.driveKinematics, getRotation2d(), getModulePositions());
 
-    speed_chooser.addOption("Fast",DrivetrainConstants.ChasisConstants.fast);
+    swerveDriveOdometry = new SwerveDriveOdometry(DrivetrainConstants.SwerveConstants
+    .driveKinematics, getRotation2d(),
+        getModulePositions());
+
+    speed_chooser.addOption("Fast", DrivetrainConstants.ChasisConstants.fast);
     speed_chooser.addOption("Slow", DrivetrainConstants.ChasisConstants.slow);
     speed_chooser.addOption("Slowest", DrivetrainConstants.ChasisConstants.slowest);
     speed_chooser.addOption("Precision", DrivetrainConstants.ChasisConstants.precision);
     speed_chooser.setDefaultOption("Normal", DrivetrainConstants.ChasisConstants.normal);
     SmartDashboard.putData("Swerve Speed", speed_chooser);
+
+    field_oriented_Chooser.addOption("Robot", false);
+    field_oriented_Chooser.setDefaultOption("Field", true);
+    SmartDashboard.putData("Robot Oritentation", field_oriented_Chooser);
+
+    try {
+      config = RobotConfig.fromGUISettings();
+      AutoBuilder.configure(
+          this::getPose,
+          this::resetPose,
+          this::getRobotRelativeSpeeds,
+          (speeds, feedforwards) -> driveRobotRelative(speeds),
+          new PPHolonomicDriveController(
+              new PIDConstants(0.01, 0.0, 0.0),
+              new PIDConstants(4.0, 0.0, 0.0)),
+          config,
+          () -> {
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+          },
+          this);
+    } catch (Exception e) {
+      DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
+    }
+    ;
   }
 
-  public void driveRobotRelative(ChassisSpeeds robotRelative) 
-  {
-    SwerveModuleState[] targetStates = DrivetrainConstants.ServeConstants.driveKinematics.toSwerveModuleStates(robotRelative);
+  public void driveRobotRelative(ChassisSpeeds robotRelative) {
+    SwerveModuleState[] targetStates = DrivetrainConstants.SwerveConstants
+    .driveKinematics
+        .toSwerveModuleStates(robotRelative);
     setModuleStates(targetStates);
   }
 
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
-      frontLeft.getDriveInMeter(),
-      frontRight.getDriveInMeter(),
-      backLeft.getDriveInMeter(),
-      backRight.getDriveInMeter()
+        frontLeft.getDriveInMeter(),
+        frontRight.getDriveInMeter(),
+        backLeft.getDriveInMeter(),
+        backRight.getDriveInMeter()
     };
   }
 
-  public void stopModules() 
-  {
+  public Pose2d getPose() {
+    return swerveDriveOdometry.getPoseMeters();
+  }
+
+  public void resetPose(Pose2d pose) {
+    System.out.println(pose);
+    swerveDriveOdometry.resetPosition(gyro.getRotation2d(), getModulePositions(), pose);
+  }
+
+  public void stopModules() {
     frontLeft.stop();
     frontRight.stop();
     backLeft.stop();
     backRight.stop();
   }
 
-  public void setModuleStates(SwerveModuleState[] desiredStates) 
-  {
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
     frontLeft.setDesiredState(desiredStates[0]);
-    frontRight.setDesiredState(desiredStates[1]); 
+    frontRight.setDesiredState(desiredStates[1]);
     backLeft.setDesiredState(desiredStates[2]);
     backRight.setDesiredState(desiredStates[3]);
   }
 
-  public SwerveModuleState[] getModuleStates()
-  {
+  public SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[] {
-      frontRight.getState(),
-      frontLeft.getState(),
-      backRight.getState(),
-      backLeft.getState()
+        frontRight.getState(),
+        frontLeft.getState(),
+        backRight.getState(),
+        backLeft.getState()
     };
     return states;
   }
 
-  public ChassisSpeeds getRobotRelativeSpeeds() 
-  {
+  public ChassisSpeeds getRobotRelativeSpeeds() {
     return chassisSpeeds;
   }
 
-
-  public void zeroHeading() 
-  {
+  public void zeroHeading() {
     gyro.reset();
   }
-  
-  public double getHeading() 
-  {
+
+  public double getHeading() {
     return Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360);
   }
-    
-  public Rotation2d getRotation2d()
-  {
-    return Rotation2d.fromDegrees(getHeading()); //For FRC functions, just converts where your facing to a "Rotation2d" type
+
+  public Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(getHeading()); 
   }
-  
+
   @Override
   public void periodic() {
     swerveDriveOdometry.update(getRotation2d(), getModulePositions());
     Constants.DataLoggingConstants.odometryRelativeField.setRobotPose(RobotContainer.swerveSubsystem.swerveDriveOdometry.getPoseMeters());
-    
     SmartDashboard.putData("Odometry Field", Constants.DataLoggingConstants.odometryRelativeField);
     SmartDashboard.putData("Vision Field", Constants.DataLoggingConstants.visionRelativeField);
-
     Pose2d pose = swerveDriveOdometry.getPoseMeters();
     double distanceTraveled = Math.sqrt(Math.pow(pose.getX() - 0, 2) + Math.pow(pose.getY() - 0, 2));
-
+    
 
     SmartDashboard.putNumber("Rotation", getHeading());
     SmartDashboard.putNumber("FL", Math.abs(frontLeft.getTurningPosition()));
@@ -147,6 +189,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("BR", Math.abs(backRight.getTurningPosition()));
     SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
 
+    DrivetrainConstants.SwerveConstants.fieldOriented = field_oriented_Chooser.getSelected().booleanValue();
     DrivetrainConstants.ChasisConstants.speedLimiter = (Double) speed_chooser.getSelected();
   }
 }

@@ -5,56 +5,42 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.constants.Constants;
 import frc.robot.constants.DrivetrainConstants;
 
 public class SwerveModule {
-  private final TalonFX turnMotorFx;
-  private final TalonFX driveMotorFX; 
+  public final TalonFX turnMotorFx;
+  public final TalonFX driveMotorFX; 
   private final PIDController turningPidController;
   private final CANcoder encoder;
 
-  public SwerveModule(int turnMotor, int driveMotor, int encoder, boolean driveReversed, boolean turnReversed) {
+  public SwerveModule(int turnMotor, int driveMotor, int encoder) {
     this.turnMotorFx = new TalonFX(turnMotor);
     this.driveMotorFX = new TalonFX(driveMotor);
     this.encoder = new CANcoder(encoder);
     
     CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
-    currentLimits.StatorCurrentLimit = DrivetrainConstants.ServeConstants.defaultStatorLimit;
+    currentLimits.StatorCurrentLimit = DrivetrainConstants.SwerveConstants.defaultStatorLimit;
     currentLimits.StatorCurrentLimitEnable = true;
       
     TalonFXConfigurator turnConfigurator = turnMotorFx.getConfigurator();
     TalonFXConfigurator driveConfigurator = turnMotorFx.getConfigurator();
-  
-    if(turnReversed) {
-      MotorOutputConfigs turnOutput = new MotorOutputConfigs();
-      turnOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-      turnConfigurator.apply(turnOutput);
-    }
-
-    if(driveReversed) {
-      MotorOutputConfigs driveOutput = new MotorOutputConfigs();
-      driveOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-      driveConfigurator.apply(driveOutput);
-    }
     
     driveConfigurator.apply(currentLimits);
     turnConfigurator.apply(currentLimits);
 
+
     turningPidController = new PIDController(0.008, 0,0);
     turningPidController.enableContinuousInput(-180, 180);
-    driveMotorFX.setNeutralMode(NeutralModeValue.Coast);
-    turnMotorFx.setNeutralMode(NeutralModeValue.Coast);
+    driveMotorFX.setNeutralMode(NeutralModeValue.Brake);
+    turnMotorFx.setNeutralMode(NeutralModeValue.Brake);
   }
 
   public SwerveModulePosition getDriveInMeter() {
@@ -100,7 +86,7 @@ public class SwerveModule {
             stop();
             return;
         }
-        driveMotorFX.set(state.speedMetersPerSecond/DrivetrainConstants.ServeConstants.kPhysicalMaxSpeedMetersPerSecond);
+        driveMotorFX.set(state.speedMetersPerSecond/DrivetrainConstants.SwerveConstants.kPhysicalMaxSpeedMetersPerSecond);
         turnMotorFx.set(turningPidController.calculate(getTurningPosition(), state.angle.getDegrees()));
     }
 

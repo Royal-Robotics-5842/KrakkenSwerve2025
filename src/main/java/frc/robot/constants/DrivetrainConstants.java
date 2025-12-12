@@ -27,9 +27,10 @@ public final class DrivetrainConstants {
     public static Double precision = 10.0;
   }
 
-  public static class ServeConstants {
+  public static class SwerveConstants {
     public static final double trackwidth = edu.wpi.first.math.util.Units.inchesToMeters(28.5); // Distance between right and left wheels
     public static final double wheelBase = edu.wpi.first.math.util.Units.inchesToMeters(28.5);  // Distance between front and back wheels
+    public static boolean fieldOriented = true;
 
     public static final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
             new Translation2d(wheelBase / 2, trackwidth / 2), //FL
@@ -64,8 +65,14 @@ public final class DrivetrainConstants {
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5.9436; //https://www.swervedrivespecialties.com/products/mk4-swerve-module
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double maxAccelerationUnitsPerSecond = 3.5;
-    //public static final double maxDeccelerationUnitsPerSecond = 3.5;
     public static final double maxAngularAccelerationUnitsPerSecond = 3.5;
+  }
+
+    public static final class AutoConstants {
+       public static final double kMaxAngularSpeedRadiansPerSecond = DrivetrainConstants.SwerveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond /ChasisConstants.slow;
+      public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / ChasisConstants.slow;
+      public static final double kPXController = 2;
+      public static final double kPThetaController = 6;
   }
 }
 

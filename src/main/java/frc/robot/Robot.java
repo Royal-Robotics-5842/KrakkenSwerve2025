@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private RobotContainer m_robotContainer;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -28,9 +29,7 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   public Robot() {
-    new RobotContainer();
-
-        SmartDashboard.putData("Swerve Drive", new Sendable() {
+      SmartDashboard.putData("Swerve Drive", new Sendable() {
       @Override
       public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("SwerveDrive");
@@ -52,6 +51,10 @@ public class Robot extends TimedRobot {
     });
   }
 
+  @Override
+  public void robotInit() {
+    m_robotContainer = new RobotContainer();
+  }
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items
    * like diagnostics
@@ -83,6 +86,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+
   }
 
   /**
@@ -91,7 +95,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -118,14 +122,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // new Orchestra("src\\main\\deploy\\output.chrp").addInstrument(new
-    // TalonFX(13));
   }
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
   }
 
   /** This function is called periodically during test mode. */

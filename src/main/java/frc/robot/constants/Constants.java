@@ -4,6 +4,7 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 /**
@@ -26,7 +27,8 @@ public final class Constants {
 
   public static class PhotonConstants {
     public static String frontCameras1 = "frontone";
-    public static double maxAllowedAmbiguity = 0.20;
+    public static double maxAllowedAmbiguity = 0.15;
+    public static AprilTagFields fieldLayout = AprilTagFields.k2025ReefscapeAndyMark;
   }
 
   public static final class OIConstants
